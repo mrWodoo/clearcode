@@ -1,0 +1,30 @@
+<?php
+namespace AppBundle\Document;
+
+use Doctrine\ODM\MongoDB\Mapping\Annotations as MongoDB;
+
+/**
+ * @MongoDB\Document
+ */
+class Person
+{
+    /**
+     * @MongoDB\Id
+     */
+    protected $id;
+
+    /**
+     * @MongoDB\Field(type="string")
+     */
+    protected $firstName;
+
+    /**
+     * @MongoDB\Field(type="string")
+     */
+    protected $lastName;
+
+    /**
+     * @MongoDB\Field(type="string")
+     */
+    protected $phone;
+}
