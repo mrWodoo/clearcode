@@ -2,6 +2,7 @@
 namespace AppBundle\Document;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as MongoDB;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @MongoDB\Document
@@ -15,18 +16,48 @@ class Person
 
     /**
      * @MongoDB\Field(type="string")
+     * @Assert\NotBlank()
+     * @Assert\Length(
+     *     min = 3,
+     *     max = 32
+     * )
      */
     protected $firstName;
 
     /**
      * @MongoDB\Field(type="string")
+     * @Assert\NotBlank()
+     * @Assert\Length(
+     *     min = 3,
+     *     max = 32
+     * )
      */
     protected $lastName;
 
     /**
      * @MongoDB\Field(type="string")
+     * @Assert\Length(
+     *     max = 15
+     * )
      */
     protected $phone;
+
+    /**
+     * @var Address[]
+     * @MongoDB\ReferenceMany(targetDocument="Address")
+     */
+    protected $addresses;
+
+    /**
+     * @var Agreement
+     * @MongoDB\ReferenceOne(targetDocument="Agreement")
+     */
+    protected $agreement;
+
+    public function __construct()
+    {
+        $this->addresses = new \Doctrine\Common\Collections\ArrayCollection();
+    }
 
     /**
      * Get id
@@ -102,5 +133,57 @@ class Person
     public function getPhone() : string
     {
         return $this->phone;
+    }
+
+    /**
+     * Add address
+     *
+     * @param \AppBundle\Document\Address $address
+     */
+    public function addAddress(\AppBundle\Document\Address $address)
+    {
+        $this->addresses[] = $address;
+    }
+
+    /**
+     * Remove address
+     *
+     * @param \AppBundle\Document\Address $address
+     */
+    public function removeAddress(\AppBundle\Document\Address $address)
+    {
+        $this->addresses->removeElement($address);
+    }
+
+    /**
+     * Get addresses
+     *
+     * @return \Doctrine\Common\Collections\Collection $addresses
+     */
+    public function getAddresses()
+    {
+        return $this->addresses;
+    }
+
+    /**
+     * Set agreement
+     *
+     * @param \AppBundle\Document\Agreement $agreement
+     * @return $this
+     */
+    public function setAgreement(\AppBundle\Document\Agreement $agreement)
+    {
+        $this->agreement = $agreement;
+        return $this;
+    }
+
+    /**
+     * Get agreement
+     *
+     * @return \AppBundle\Document\Agreement $agreement
+     */
+    public function getAgreement()
+    {
+        return $this->agreement;
     }
 }

@@ -1,0 +1,70 @@
+<?php
+namespace AppBundle\Document;
+
+use AppBundle\Enum\Document\AddressTypeEnum;
+use Doctrine\ODM\MongoDB\Mapping\Annotations as MongoDB;
+use Symfony\Component\Validator\Constraints as Assert;
+
+/**
+ * @MongoDB\Document
+ */
+class Agreement
+{
+    /**
+     * @var string|null
+     * @MongoDB\Id
+     */
+    protected $id;
+
+    /**
+     * @MongoDB\Field(type="string")
+     * @Assert\NotBlank()
+     * @Assert\Length(
+     *     min = 32,
+     *     max = 64
+     * )
+     */
+    protected $number;
+
+    /**
+     * @MongoDB\Field(type="date")
+     * @Assert\NotBlank()
+     * @Assert\Length(
+     *     min = 3,
+     *     max = 100
+     * )
+     */
+    protected $signingDate;
+
+    /**
+     * Get id
+     *
+     * @return string|null $id
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
+
+    /**
+     * Set number
+     *
+     * @param string $number
+     * @return $this
+     */
+    public function setNumber(string $number) : Agreement
+    {
+        $this->number = $number;
+        return $this;
+    }
+
+    /**
+     * Get number
+     *
+     * @return string $number
+     */
+    public function getNumber() : string
+    {
+        return $this->number;
+    }
+}

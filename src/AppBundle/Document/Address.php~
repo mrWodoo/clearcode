@@ -1,0 +1,53 @@
+<?php
+namespace AppBundle\Document;
+
+use AppBundle\Enum\Document\AddressTypeEnum;
+use Doctrine\ODM\MongoDB\Mapping\Annotations as MongoDB;
+use Symfony\Component\Validator\Constraints as Assert;
+
+/**
+ * @MongoDB\Document
+ */
+class Address
+{
+    /**
+     * @MongoDB\Id
+     */
+    protected $id;
+
+    /**
+     * @MongoDB\Field(type="string")
+     * @Assert\NotBlank()
+     * @Assert\Length(
+     *     max = 255
+     * )
+     */
+    protected $address;
+
+    /**
+     * @MongoDB\Field(type="string")
+     * @Assert\NotBlank()
+     * @Assert\Length(
+     *     min = 3,
+     *     max = 100
+     * )
+     */
+    protected $city;
+
+    /**
+     * @see AddressTypeEnum
+     * @MongoDB\Field(type="string")
+     * @Assert\Choice(
+     *     callback = "getTypes"
+     * )
+     */
+    protected $type;
+
+    /**
+     * @return array
+     */
+    public function getTypes() : array
+    {
+        return AddressTypeEnum::getTypes();
+    }
+}
