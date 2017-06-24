@@ -5,7 +5,7 @@ namespace AppBundle\Controller;
 use AppBundle\Document\Person;
 use AppBundle\Enum\RESTResponseEnum;
 use AppBundle\Helper\ValidatorHelper;
-use AppBundle\Service\PersonService;
+use AppBundle\Service\PersonServiceInterface;
 use Doctrine\ODM\MongoDB\DocumentNotFoundException;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -22,7 +22,7 @@ class PersonController extends AbstractController
     protected $validator;
 
     /**
-     * @var PersonService
+     * @var PersonServiceInterface
      */
     protected $personService;
 
@@ -37,7 +37,7 @@ class PersonController extends AbstractController
      */
     public function __construct(
         ValidatorInterface $validator,
-        PersonService $personService,
+        PersonServiceInterface $personService,
         ValidatorHelper $validatorHelper
     )
     {

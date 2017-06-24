@@ -6,7 +6,7 @@ use AppBundle\Controller\PersonController;
 use AppBundle\Document\Person;
 use AppBundle\Helper\ValidatorHelper;
 use AppBundle\Repository\PersonRepository;
-use AppBundle\Service\PersonService;
+use AppBundle\Service\PersonServiceInterface;
 use Doctrine\ODM\MongoDB\DocumentNotFoundException;
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
@@ -18,7 +18,7 @@ class PersonControllerSpec extends ObjectBehavior
 {
     function it_is_initializable(
         ValidatorInterface $validator,
-        PersonService $personService,
+        PersonServiceInterface $personService,
         ValidatorHelper $validatorHelper
     )
     {
@@ -31,7 +31,7 @@ class PersonControllerSpec extends ObjectBehavior
 
     public function it_will_send_response_with_404_on_delete_when_person_not_found(
         ValidatorInterface $validator,
-        PersonService $personService,
+        PersonServiceInterface $personService,
         ValidatorHelper $validatorHelper
     )
     {
@@ -54,7 +54,7 @@ class PersonControllerSpec extends ObjectBehavior
 
     public function it_will_send_response_with_404_on_read_when_person_not_found(
         ValidatorInterface $validator,
-        PersonService $personService,
+        PersonServiceInterface $personService,
         ValidatorHelper $validatorHelper
     )
     {
@@ -75,7 +75,7 @@ class PersonControllerSpec extends ObjectBehavior
 
     public function it_will_send_response_with_code_200_when_reading_everything(
         ValidatorInterface $validator,
-        PersonService $personService,
+        PersonServiceInterface $personService,
         ValidatorHelper $validatorHelper)
     {
         $this
@@ -93,7 +93,7 @@ class PersonControllerSpec extends ObjectBehavior
 
     public function it_will_send_response_with_code_404_on_update_when_document_not_found(
         ValidatorInterface $validator,
-        PersonService $personService,
+        PersonServiceInterface $personService,
         ValidatorHelper $validatorHelper,
 
         Request $request,
@@ -118,7 +118,7 @@ class PersonControllerSpec extends ObjectBehavior
     public function it_will_send_response_with_code_400_on_update_when_document_found_and_invalid_input
     (
         ValidatorInterface $validator,
-        PersonService $personService,
+        PersonServiceInterface $personService,
         ValidatorHelper $validatorHelper,
         Request $request,
         PersonRepository $personRepository
@@ -144,7 +144,7 @@ class PersonControllerSpec extends ObjectBehavior
     public function it_will_send_response_with_code_200_on_update_when_document_found_and_valid_input
     (
         ValidatorInterface $validator,
-        PersonService $personService,
+        PersonServiceInterface $personService,
         ValidatorHelper $validatorHelper,
         Request $request,
         PersonRepository $personRepository
@@ -178,7 +178,7 @@ class PersonControllerSpec extends ObjectBehavior
     public function it_will_send_response_with_code_400_on_create_when_document_found_and_invalid_input
     (
         ValidatorInterface $validator,
-        PersonService $personService,
+        PersonServiceInterface $personService,
         ValidatorHelper $validatorHelper,
 
         Request $request,
@@ -205,7 +205,7 @@ class PersonControllerSpec extends ObjectBehavior
     public function it_will_send_response_with_code_200_on_create_when_document_found_and_valid_input
     (
         ValidatorInterface $validator,
-        PersonService $personService,
+        PersonServiceInterface $personService,
         ValidatorHelper $validatorHelper,
         Request $request,
         PersonRepository $personRepository
