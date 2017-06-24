@@ -4,6 +4,7 @@ namespace spec\AppBundle\Controller;
 
 use AppBundle\Controller\PersonController;
 use AppBundle\Document\Person;
+use AppBundle\Helper\ValidatorHelper;
 use AppBundle\Repository\PersonRepository;
 use AppBundle\Service\PersonService;
 use Doctrine\ODM\MongoDB\DocumentNotFoundException;
@@ -15,21 +16,29 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class PersonControllerSpec extends ObjectBehavior
 {
-    function it_is_initializable(ValidatorInterface $validator, PersonService $personService)
+    function it_is_initializable(
+        ValidatorInterface $validator,
+        PersonService $personService,
+        ValidatorHelper $validatorHelper
+    )
     {
         $this
-            ->beConstructedWith($validator, $personService);
+            ->beConstructedWith($validator, $personService, $validatorHelper);
 
         $this
             ->shouldHaveType(PersonController::class);
     }
 
-    public function it_will_send_response_with_404_on_delete_when_person_not_found(ValidatorInterface $validator, PersonService $personService)
+    public function it_will_send_response_with_404_on_delete_when_person_not_found(
+        ValidatorInterface $validator,
+        PersonService $personService,
+        ValidatorHelper $validatorHelper
+    )
     {
         $id = 'id that should never exist';
 
         $this
-            ->beConstructedWith($validator, $personService);
+            ->beConstructedWith($validator, $personService, $validatorHelper);
 
         $personService
             ->deletePerson($id)
@@ -43,12 +52,16 @@ class PersonControllerSpec extends ObjectBehavior
         $response->getStatusCode()->shouldBe(404);
     }
 
-    public function it_will_send_response_with_404_on_read_when_person_not_found(ValidatorInterface $validator, PersonService $personService)
+    public function it_will_send_response_with_404_on_read_when_person_not_found(
+        ValidatorInterface $validator,
+        PersonService $personService,
+        ValidatorHelper $validatorHelper
+    )
     {
         $id = 'id that should never exist';
 
         $this
-            ->beConstructedWith($validator, $personService);
+            ->beConstructedWith($validator, $personService, $validatorHelper);
 
         $personService->fetchAsArray($id)->willReturn([]);
 
@@ -60,10 +73,13 @@ class PersonControllerSpec extends ObjectBehavior
         $response->getStatusCode()->shouldBe(404);
     }
 
-    public function it_will_send_response_with_code_200_when_reading_everything(ValidatorInterface $validator, PersonService $personService)
+    public function it_will_send_response_with_code_200_when_reading_everything(
+        ValidatorInterface $validator,
+        PersonService $personService,
+        ValidatorHelper $validatorHelper)
     {
         $this
-            ->beConstructedWith($validator, $personService);
+            ->beConstructedWith($validator, $personService, $validatorHelper);
 
         $personService->fetchAsArray(null)->willReturn([]);
 
@@ -78,6 +94,8 @@ class PersonControllerSpec extends ObjectBehavior
     public function it_will_send_response_with_code_404_on_update_when_document_not_found(
         ValidatorInterface $validator,
         PersonService $personService,
+        ValidatorHelper $validatorHelper,
+
         Request $request,
         PersonRepository $personRepository
     )
@@ -85,7 +103,7 @@ class PersonControllerSpec extends ObjectBehavior
         $id = 'id that should never exist';
 
         $this
-            ->beConstructedWith($validator, $personService);
+            ->beConstructedWith($validator, $personService, $validatorHelper);
 
         $personService->getRepository()->willReturn($personRepository);
 
@@ -101,6 +119,7 @@ class PersonControllerSpec extends ObjectBehavior
     (
         ValidatorInterface $validator,
         PersonService $personService,
+        ValidatorHelper $validatorHelper,
         Request $request,
         PersonRepository $personRepository
     )
@@ -109,7 +128,7 @@ class PersonControllerSpec extends ObjectBehavior
         $person     = new Person();
 
         $this
-            ->beConstructedWith($validator, $personService);
+            ->beConstructedWith($validator, $personService, $validatorHelper);
 
         $personService->getRepository()->willReturn($personRepository);
         $personRepository->find($id)->willReturn($person);
@@ -126,6 +145,7 @@ class PersonControllerSpec extends ObjectBehavior
     (
         ValidatorInterface $validator,
         PersonService $personService,
+        ValidatorHelper $validatorHelper,
         Request $request,
         PersonRepository $personRepository
     )
@@ -137,7 +157,7 @@ class PersonControllerSpec extends ObjectBehavior
         $person     = new Person();
 
         $this
-            ->beConstructedWith($validator, $personService);
+            ->beConstructedWith($validator, $personService, $validatorHelper);
 
         $personService->getRepository()->willReturn($personRepository);
         $personRepository->find($id)->willReturn($person);
@@ -159,6 +179,8 @@ class PersonControllerSpec extends ObjectBehavior
     (
         ValidatorInterface $validator,
         PersonService $personService,
+        ValidatorHelper $validatorHelper,
+
         Request $request,
         PersonRepository $personRepository
     )
@@ -167,7 +189,7 @@ class PersonControllerSpec extends ObjectBehavior
         $person     = new Person();
 
         $this
-            ->beConstructedWith($validator, $personService);
+            ->beConstructedWith($validator, $personService, $validatorHelper);
 
         $personService->getRepository()->willReturn($personRepository);
         $personRepository->find($id)->willReturn($person);
@@ -184,6 +206,7 @@ class PersonControllerSpec extends ObjectBehavior
     (
         ValidatorInterface $validator,
         PersonService $personService,
+        ValidatorHelper $validatorHelper,
         Request $request,
         PersonRepository $personRepository
     )
@@ -195,7 +218,7 @@ class PersonControllerSpec extends ObjectBehavior
         $person     = new Person();
 
         $this
-            ->beConstructedWith($validator, $personService);
+            ->beConstructedWith($validator, $personService, $validatorHelper);
 
         $personService->getRepository()->willReturn($personRepository);
         $personRepository->find($id)->willReturn($person);

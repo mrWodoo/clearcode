@@ -131,7 +131,6 @@ class PersonService
     {
         $dm = $this->getRepository()->getDocumentManager();
 
-
         $dm->persist($person);
         $dm->flush();
     }

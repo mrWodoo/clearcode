@@ -3,7 +3,6 @@
 namespace AppBundle\Repository;
 
 use AppBundle\Document\Person;
-use Doctrine\ODM\MongoDB\DocumentNotFoundException;
 use Doctrine\ODM\MongoDB\DocumentRepository;
 
 class PersonRepository extends DocumentRepository

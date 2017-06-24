@@ -67,6 +67,19 @@ Request body:
 ```
 Will set firstName to "Denis"
 
+#
+Creating person
+
+```
+PUT /person/create
+Returns code 200 on success
+Returns code 400 when invalid input is sent
+
+Request body: see "More advanced example"
+
+Request response: JSON with id of created person
+```
+
 List of fields you can manage
 ====
 If person has no agreement then new will be created.
@@ -104,3 +117,4 @@ More advanced example
 	}
 }
 ```
+

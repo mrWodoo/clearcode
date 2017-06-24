@@ -2,27 +2,15 @@
 
 namespace AppBundle\Controller;
 
-use AppBundle\Document\Address;
-use AppBundle\Document\Agreement;
 use AppBundle\Document\Person;
-use AppBundle\Enum\Document\AddressTypeEnum;
 use AppBundle\Enum\RESTResponseEnum;
-use AppBundle\Repository\PersonRepository;
+use AppBundle\Helper\ValidatorHelper;
 use AppBundle\Service\PersonService;
-use Doctrine\Common\Persistence\ManagerRegistry;
-use Doctrine\Common\Persistence\ObjectRepository;
-use Doctrine\ODM\MongoDB\DocumentManager;
 use Doctrine\ODM\MongoDB\DocumentNotFoundException;
-use Doctrine\ODM\MongoDB\Hydrator\HydratorFactory;
-use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\ORM\Internal\Hydration\ArrayHydrator;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
-use Symfony\Component\Serializer\Encoder\JsonEncoder;
-use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
-use Symfony\Component\Serializer\Serializer;
 use Symfony\Component\Validator\ConstraintViolationListInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
@@ -39,16 +27,23 @@ class PersonController extends AbstractController
     protected $personService;
 
     /**
+     * @var ValidatorHelper
+     */
+    protected $validatorHelper;
+
+    /**
      * PersonController constructor.
      * @param ValidatorInterface $validator
      */
     public function __construct(
         ValidatorInterface $validator,
-        PersonService $personService
+        PersonService $personService,
+        ValidatorHelper $validatorHelper
     )
     {
         $this->validator        = $validator;
         $this->personService    = $personService;
+        $this->validatorHelper  = $validatorHelper;
     }
 
     /**
@@ -100,13 +95,11 @@ class PersonController extends AbstractController
 
         // Handle validation errors
         if ($update instanceof ConstraintViolationListInterface) {
-            $errors = [];
-
-            foreach ($update AS $error) {
-                $errors[$error->getPropertyPath()] = $error->getMessage();
-            }
-
-            return $this->getJsonErrorResponse(RESTResponseEnum::BAD_REQUEST, $errors);
+            return $this
+                ->getJsonErrorResponse(
+                    RESTResponseEnum::BAD_REQUEST,
+                        $this->validatorHelper->constraintViolationListToArray($update)
+                );
         }
 
         $this->personService->savePerson($person);
@@ -139,13 +132,11 @@ class PersonController extends AbstractController
 
         // Handle validation errors
         if ($update instanceof ConstraintViolationListInterface) {
-            $errors = [];
-
-            foreach ($update AS $error) {
-                $errors[$error->getPropertyPath()] = $error->getMessage();
-            }
-
-            return $this->getJsonErrorResponse(RESTResponseEnum::BAD_REQUEST, $errors);
+            return $this
+                ->getJsonErrorResponse(
+                    RESTResponseEnum::BAD_REQUEST,
+                    $this->validatorHelper->constraintViolationListToArray($update)
+                );
         }
 
         $this->personService->savePerson($person);
