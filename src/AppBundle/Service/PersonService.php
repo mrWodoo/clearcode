@@ -3,9 +3,13 @@
 namespace AppBundle\Service;
 
 use AppBundle\Document\Address;
+use AppBundle\Document\Agreement;
 use AppBundle\Document\Person;
+use AppBundle\Enum\Document\AddressTypeEnum;
 use AppBundle\Repository\PersonRepository;
 use Doctrine\ODM\MongoDB\DocumentNotFoundException;
+use Symfony\Component\Validator\ConstraintViolationListInterface;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class PersonService
 {
@@ -17,10 +21,12 @@ class PersonService
     /**
      * PersonService constructor.
      * @param PersonRepository $personRepository
+     * @param ValidatorInterface $validator
      */
-    public function __construct(PersonRepository $personRepository)
+    public function __construct(PersonRepository $personRepository, ValidatorInterface $validator)
     {
         $this->personRepository = $personRepository;
+        $this->validator        = $validator;
     }
 
     /**
@@ -136,5 +142,97 @@ class PersonService
     public function getRepository()
     {
         return $this->personRepository;
+    }
+
+    /**
+     * Update person and it's children (agreement, addresses).
+
+     * @param array $input
+     * @param Person $person
+     * @return Person|ConstraintViolationListInterface
+     */
+    public function processCreateUpdate(array $input, Person $person)
+    {
+        if (array_key_exists('firstName', $input)) {
+            $person->setFirstName($input['firstName']);
+        }
+
+        if (array_key_exists('lastName', $input)) {
+            $person->setLastName($input['lastName']);
+        }
+
+        if (array_key_exists('phone', $input)) {
+            $person->setPhone($input['phone']);
+        }
+
+        // Update/create agreement
+        if (array_key_exists('agreement', $input)) {
+            $agremeentData  = $input['agreement'];
+            $agreement      = $person->getAgreement() ?? new Agreement();
+
+            // Assign agreement
+            $person->setAgreement($agreement);
+
+            if (array_key_exists('number', $agremeentData)) {
+                $agreement->setNumber($agremeentData['number']);
+            }
+
+            if (array_key_exists('signingDate', $agremeentData)) {
+                $signingDate = new \DateTime($agremeentData['signingDate']);
+                $agreement->setSigningDate($signingDate);
+            }
+
+            // Validate agreement
+            $agreementErrors = $this->validator->validate($agreement);
+
+            if (count($agreementErrors)) {
+                return $agreementErrors;
+            }
+        }
+
+        // Update/create address
+        if (array_key_exists('addresses', $input)) {
+            $addressesInput = $input['addresses'];
+            $adressesByType = $this->getAdressesGrouppedByType($person);
+
+            // Loop through input
+            foreach ($addressesInput AS $type => $addressInput) {
+                // Only accept valid types
+                if (in_array($type, AddressTypeEnum::getTypes())) {
+                    $address = $adressesByType[$type] ?? new Address();
+
+                    // Assign address if new
+                    if (!$address->getId()) {
+                        $person->addAddress($address);
+                    }
+
+                    $address->setType($type);
+
+                    if (array_key_exists('address', $addressInput)) {
+                        $address->setAddress($addressInput['address']);
+                    }
+
+                    if (array_key_exists('city', $addressInput)) {
+                        $address->setCity($addressInput['city']);
+                    }
+
+                    // Validate address
+                    $addressErrors = $this->validator->validate($address);
+
+                    if (count($addressErrors)) {
+                        return $addressErrors;
+                    }
+                }
+            }
+        }
+
+        // Validate person
+        $personErrors = $this->validator->validate($person);
+
+        if (count($personErrors)) {
+            return $personErrors;
+        }
+
+        return $person;
     }
 }

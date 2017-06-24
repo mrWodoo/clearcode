@@ -7,21 +7,22 @@ use AppBundle\Service\PersonService;
 use Doctrine\ODM\MongoDB\DocumentNotFoundException;
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class PersonServiceSpec extends ObjectBehavior
 {
-    function it_is_initializable(PersonRepository $personRepository)
+    function it_is_initializable(PersonRepository $personRepository, ValidatorInterface $validator)
     {
         $this
-            ->beConstructedWith($personRepository);
+            ->beConstructedWith($personRepository, $validator);
 
         $this->shouldHaveType(PersonService::class);
     }
 
-    public function it_throws_exception_on_delete_person_when_document_not_found(PersonRepository $personRepository)
+    public function it_throws_exception_on_delete_person_when_document_not_found(PersonRepository $personRepository, ValidatorInterface $validator)
     {
         $this
-            ->beConstructedWith($personRepository);
+            ->beConstructedWith($personRepository, $validator);
 
         $this
             ->shouldThrow(DocumentNotFoundException::class)

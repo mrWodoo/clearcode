@@ -96,7 +96,7 @@ class PersonController extends AbstractController
         }
 
         // Update person
-        $update = $this->processCreateUpdate($inputJson, $person);
+        $update = $this->personService->processCreateUpdate($inputJson, $person);
 
         // Handle validation errors
         if ($update instanceof ConstraintViolationListInterface) {
@@ -117,95 +117,42 @@ class PersonController extends AbstractController
     }
 
     /**
-     * Update person and it's children (agreement, addresses).
-     * @TODO move to service
-     * @param array $input
-     * @param Person $person
-     * @return Person|ConstraintViolationListInterface
+     * @Route("/person/create", name="createPerson")
+     * @Method({"PUT"})
      */
-    protected function processCreateUpdate(array $input, Person $person)
+    public function createAction(Request $request)
     {
-        if (array_key_exists('firstName', $input)) {
-            $person->setFirstName($input['firstName']);
+        // Get and validate input
+        $inputJson  = json_decode($request->getContent(), JSON_BIGINT_AS_STRING);
+
+        if (json_last_error()) {
+            return $this->getJsonErrorResponse(RESTResponseEnum::BAD_REQUEST, [
+                'Invalid input'
+            ]);
         }
 
-        if (array_key_exists('lastName', $input)) {
-            $person->setLastName($input['lastName']);
-        }
+        /** @var Person $person */
+        $person     = new Person();
 
-        if (array_key_exists('phone', $input)) {
-            $person->setPhone($input['phone']);
-        }
+        // Update person
+        $update = $this->personService->processCreateUpdate($inputJson, $person);
 
-        // Update/create agreement
-        if (array_key_exists('agreement', $input)) {
-            $agremeentData  = $input['agreement'];
-            $agreement      = $person->getAgreement() ?? new Agreement();
+        // Handle validation errors
+        if ($update instanceof ConstraintViolationListInterface) {
+            $errors = [];
 
-            // Assign agreement
-            $person->setAgreement($agreement);
-
-            if (array_key_exists('number', $agremeentData)) {
-                $agreement->setNumber($agremeentData['number']);
+            foreach ($update AS $error) {
+                $errors[$error->getPropertyPath()] = $error->getMessage();
             }
 
-            if (array_key_exists('signingDate', $agremeentData)) {
-                $signingDate = new \DateTime($agremeentData['signingDate']);
-                $agreement->setSigningDate($signingDate);
-            }
-
-            // Validate agreement
-            $agreementErrors = $this->validator->validate($agreement);
-
-            if (count($agreementErrors)) {
-                return $agreementErrors;
-            }
+            return $this->getJsonErrorResponse(RESTResponseEnum::BAD_REQUEST, $errors);
         }
 
-        // Update/create address
-        if (array_key_exists('addresses', $input)) {
-            $addressesInput = $input['addresses'];
-            $adressesByType = $this->personService->getAdressesGrouppedByType($person);
+        $this->personService->savePerson($person);
 
-            // Loop through input
-            foreach ($addressesInput AS $type => $addressInput) {
-                // Only accept valid types
-                if (in_array($type, AddressTypeEnum::getTypes())) {
-                    $address = $adressesByType[$type] ?? new Address();
-
-                    // Assign address if new
-                    if (!$address->getId()) {
-                        $person->addAddress($address);
-                    }
-
-                    $address->setType($type);
-
-                    if (array_key_exists('address', $addressInput)) {
-                        $address->setAddress($addressInput['address']);
-                    }
-
-                    if (array_key_exists('city', $addressInput)) {
-                        $address->setCity($addressInput['city']);
-                    }
-
-                    // Validate address
-                    $addressErrors = $this->validator->validate($address);
-
-                    if (count($addressErrors)) {
-                        return $addressErrors;
-                    }
-                }
-            }
-        }
-
-        // Validate person
-        $personErrors = $this->validator->validate($person);
-
-        if (count($personErrors)) {
-            return $personErrors;
-        }
-
-        return $person;
+        return $this->getJsonResponse([
+            'id'        => $person->getId()
+        ]);
     }
 
     /**
