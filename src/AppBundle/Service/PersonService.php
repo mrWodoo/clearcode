@@ -2,6 +2,7 @@
 
 namespace AppBundle\Service;
 
+use AppBundle\Document\Address;
 use AppBundle\Document\Person;
 use AppBundle\Repository\PersonRepository;
 use Doctrine\ODM\MongoDB\DocumentNotFoundException;
@@ -36,7 +37,7 @@ class PersonService
 
         foreach ($people AS $person) {
             // Build agreement output
-            $agreementArray = [];
+            $agreementArray = null;
             $agreement      = $person->getAgreement();
 
             if ($agreement) {
@@ -50,10 +51,11 @@ class PersonService
             }
 
             // Build addresses output
-            $addressesArray = [];
+            $addressesArray = null;
             $addresses      = $person->getAddresses();
 
-            if ($addresses) {
+            if (count($addresses)) {
+                $addressesArray = [];
                 foreach ($addresses AS $address) {
                     $addressesArray[] = [
                         'id'        => $address->getId(),
@@ -75,7 +77,26 @@ class PersonService
             ];
         }
 
+        if ($id) {
+            return $return[array_keys($return)[0]];
+        }
+
         return $return;
+    }
+
+    /**
+     * @param Person $person
+     * @return Address[]
+     */
+    public function getAdressesGrouppedByType(Person $person) : array
+    {
+        $output = [];
+
+        foreach ($person->getAddresses() AS $address) {
+            $output[$address->getType()] = $address;
+        }
+
+        return $output;
     }
 
     /**
@@ -95,5 +116,25 @@ class PersonService
         $this->personRepository->remove($person);
 
         return true;
+    }
+
+    /**
+     * @param Person $person
+     */
+    public function savePerson(Person $person)
+    {
+        $dm = $this->getRepository()->getDocumentManager();
+
+
+        $dm->persist($person);
+        $dm->flush();
+    }
+
+    /**
+     * @return PersonRepository
+     */
+    public function getRepository()
+    {
+        return $this->personRepository;
     }
 }

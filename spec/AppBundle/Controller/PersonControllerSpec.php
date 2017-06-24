@@ -36,6 +36,8 @@ class PersonControllerSpec extends ObjectBehavior
         $response = $this->deleteAction($id);
 
         $response->shouldHaveType(JsonResponse::class);
+
+        $response->getStatusCode()->shouldBe(404);
     }
 
     public function it_will_send_response_with_404_on_read_when_person_not_found(ValidatorInterface $validator, PersonService $personService)
@@ -51,6 +53,8 @@ class PersonControllerSpec extends ObjectBehavior
         $response = $this->readAction($id);
 
         $response->shouldHaveType(JsonResponse::class);
+
+        $response->getStatusCode()->shouldBe(404);
     }
 
     public function it_will_send_response_with_code_200_when_reading_everything(ValidatorInterface $validator, PersonService $personService)
@@ -64,5 +68,7 @@ class PersonControllerSpec extends ObjectBehavior
         $response = $this->readAction();
 
         $response->shouldHaveType(JsonResponse::class);
+
+        $response->getStatusCode()->shouldBe(200);
     }
 }

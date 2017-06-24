@@ -19,7 +19,7 @@ class PersonRepository extends DocumentRepository
             ->createQueryBuilder(Person::class);
 
         $queryBuilder
-            ->select('person');
+            ->select('id', 'firstName', 'lastName', 'phone', 'agreement', 'addresses');
 
         // Specify id
         if ($id) {

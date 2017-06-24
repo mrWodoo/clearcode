@@ -45,13 +45,16 @@ class Person
 
     /**
      * @var Address[]
-     * @MongoDB\ReferenceMany(targetDocument="Address", cascade={"remove"})
+     * @MongoDB\ReferenceMany(targetDocument="Address", cascade={"remove","persist"})
+     * @Assert\Count(
+     *      max = 3
+     * )
      */
     protected $addresses;
 
     /**
      * @var Agreement
-     * @MongoDB\ReferenceOne(targetDocument="Agreement", cascade={"remove"})
+     * @MongoDB\ReferenceOne(targetDocument="Agreement", cascade={"remove","persist"})
      */
     protected $agreement;
 
