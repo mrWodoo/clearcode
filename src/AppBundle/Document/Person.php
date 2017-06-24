@@ -6,6 +6,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @MongoDB\Document
+ * @MongoDB\Document(repositoryClass="AppBundle\Repository\PersonRepository")
  */
 class Person
 {
@@ -44,16 +45,19 @@ class Person
 
     /**
      * @var Address[]
-     * @MongoDB\ReferenceMany(targetDocument="Address")
+     * @MongoDB\ReferenceMany(targetDocument="Address", cascade={"remove"})
      */
     protected $addresses;
 
     /**
      * @var Agreement
-     * @MongoDB\ReferenceOne(targetDocument="Agreement")
+     * @MongoDB\ReferenceOne(targetDocument="Agreement", cascade={"remove"})
      */
     protected $agreement;
 
+    /**
+     * Person constructor.
+     */
     public function __construct()
     {
         $this->addresses = new \Doctrine\Common\Collections\ArrayCollection();
@@ -64,7 +68,7 @@ class Person
      *
      * @return $id
      */
-    public function getId() : string
+    public function getId()
     {
         return $this->id;
     }
@@ -86,7 +90,7 @@ class Person
      *
      * @return string $firstName
      */
-    public function getFirstName() : string
+    public function getFirstName()
     {
         return $this->firstName;
     }
@@ -108,7 +112,7 @@ class Person
      *
      * @return string $lastName
      */
-    public function getLastName() : string
+    public function getLastName()
     {
         return $this->lastName;
     }
@@ -130,7 +134,7 @@ class Person
      *
      * @return string $phone
      */
-    public function getPhone() : string
+    public function getPhone()
     {
         return $this->phone;
     }
@@ -158,7 +162,7 @@ class Person
     /**
      * Get addresses
      *
-     * @return \Doctrine\Common\Collections\Collection $addresses
+     * @return \Doctrine\Common\Collections\Collection|Address[]
      */
     public function getAddresses()
     {

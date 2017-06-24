@@ -47,7 +47,7 @@ class Address
     /**
      * @return array
      */
-    public function getTypes() : array
+    public function getTypes()
     {
         return AddressTypeEnum::getTypes();
     }
@@ -68,7 +68,7 @@ class Address
      * @param string $address
      * @return $this
      */
-    public function setAddress(string $address) : Address
+    public function setAddress(string $address)
     {
         $this->address = $address;
         return $this;
@@ -79,7 +79,7 @@ class Address
      *
      * @return string $address
      */
-    public function getAddress() : string
+    public function getAddress()
     {
         return $this->address;
     }
@@ -90,7 +90,7 @@ class Address
      * @param string $city
      * @return $this
      */
-    public function setCity(string $city) : Address
+    public function setCity(string $city)
     {
         $this->city = $city;
         return $this;
@@ -101,7 +101,7 @@ class Address
      *
      * @return string $city
      */
-    public function getCity() : string
+    public function getCity()
     {
         return $this->city;
     }
@@ -112,7 +112,7 @@ class Address
      * @param string $type
      * @return $this
      */
-    public function setType(string $type) : Address
+    public function setType(string $type)
     {
         $this->type = $type;
         return $this;
@@ -123,7 +123,7 @@ class Address
      *
      * @return string $type
      */
-    public function getType() : string
+    public function getType()
     {
         return $this->type;
     }

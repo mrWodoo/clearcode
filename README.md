@@ -1,6 +1,8 @@
 clearcode
 =========
 
+PHP7.0 is required to run this project.
+
 Configure proper virtual host
 ```
 <VirtualHost *:80>

@@ -28,7 +28,7 @@ abstract class AbstractController extends Controller
     public function getJsonResponse($response) : JsonResponse
     {
         return new JsonResponse([
-            'code'      => RESTResponseEnum::OK,
+            'code'      => RestResponseEnum::OK,
             'response'  => $response
         ], RESTResponseEnum::OK);
     }

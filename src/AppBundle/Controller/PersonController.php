@@ -6,10 +6,13 @@ use AppBundle\Document\Address;
 use AppBundle\Document\Agreement;
 use AppBundle\Document\Person;
 use AppBundle\Enum\Document\AddressTypeEnum;
-use AppBundle\Enum\RestResponseEnum;
+use AppBundle\Enum\RESTResponseEnum;
+use AppBundle\Repository\PersonRepository;
+use AppBundle\Service\PersonService;
 use Doctrine\Common\Persistence\ManagerRegistry;
 use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ODM\MongoDB\DocumentManager;
+use Doctrine\ODM\MongoDB\DocumentNotFoundException;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Annotation\Route;
@@ -24,12 +27,21 @@ class PersonController extends AbstractController
     protected $validator;
 
     /**
+     * @var PersonService
+     */
+    protected $personService;
+
+    /**
      * PersonController constructor.
      * @param ValidatorInterface $validator
      */
-    public function __construct(ValidatorInterface $validator)
+    public function __construct(
+        ValidatorInterface $validator,
+        PersonService $personService
+    )
     {
-        $this->validator = $validator;
+        $this->validator        = $validator;
+        $this->personService    = $personService;
     }
 
     /**
@@ -40,31 +52,13 @@ class PersonController extends AbstractController
      */
     public function readAction(string $id = null) : JsonResponse
     {
-        /** @var ManagerRegistry $doctrine */
-        $doctrine = $this->get('doctrine_mongodb');
+        $people = $this->personService->fetchAsArray($id);
 
-        /** @var EntityManagerInterface $dm */
-        $dm         = $doctrine->getManager();
-
-        /** @var ObjectRepository $repository */
-        $repository = $doctrine->getRepository('AppBundle:Person');
-
-        /** @var Person[] $people */
-        $people     = [];
-
-
-        // Find specific person
-        if ($id) {
-            $person = $repository
-                ->find($id);
-
-            if ($person) {
-                $people[] = $person;
-            }
-        } else {
-            // Find everyone
-            $people = $repository
-                ->findAll();
+        // Specified person not found
+        if (!$people && $id) {
+            return $this->getJsonErrorResponse(RESTResponseEnum::NOT_FOUND, [
+                'Person not found'
+            ]);
         }
 
         return $this->getJsonResponse($people);
@@ -76,27 +70,14 @@ class PersonController extends AbstractController
      */
     public function deleteAction($id)
     {
-        /** @var ManagerRegistry $doctrine */
-        $doctrine = $this->get('doctrine_mongodb');
-
-        /** @var EntityManagerInterface $dm */
-        $dm         = $doctrine->getManager();
-
-        /** @var ObjectRepository $repository */
-        $repository = $doctrine->getRepository('AppBundle:Person');
-
-        $person = $repository
-            ->find($id);
-
-        if (!$person) {
+        try {
+            $this->personService->deletePerson($id);
+        } catch (DocumentNotFoundException $exception) {
             return $this
                 ->getJsonErrorResponse(RESTResponseEnum::NOT_FOUND, [
                     'Given person not found'
                 ]);
         }
-
-        $dm->remove($person);
-        $dm->flush();
 
         return $this->getJsonResponse('Person removed');
     }

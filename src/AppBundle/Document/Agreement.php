@@ -49,7 +49,7 @@ class Agreement
      * @param string $number
      * @return $this
      */
-    public function setNumber(string $number) : Agreement
+    public function setNumber(string $number)
     {
         $this->number = $number;
         return $this;
@@ -60,7 +60,7 @@ class Agreement
      *
      * @return string $number
      */
-    public function getNumber() : string
+    public function getNumber()
     {
         return $this->number;
     }
@@ -69,7 +69,7 @@ class Agreement
      * @param \DateTime $signingDate
      * @return $this
      */
-    public function setSigningDate(\DateTime $signingDate) : Agreement
+    public function setSigningDate(\DateTime $signingDate)
     {
         $this->signingDate = $signingDate;
         return $this;
@@ -78,9 +78,9 @@ class Agreement
     /**
      * Get signingDate
      *
-     * @return date $signingDate
+     * @return \DateTime $signingDate
      */
-    public function getSigningDate() : \DateTime
+    public function getSigningDate()
     {
         return $this->signingDate;
     }

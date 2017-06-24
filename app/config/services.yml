@@ -1,7 +1,8 @@
 services:
-    app.personController:
-        class: AppBundle\Controller\PersonController
-        arguments: ['@doctrine.orm.non_default_entity_managerdads']
+    app.person_repository:
+        class: AppBundle\Repository\PersonRepository
+        factory: ["@doctrine.odm.mongodb.document_manager", getRepository]
+        arguments: [AppBundle\Document\Person]
 
     _defaults:
         # automatically injects dependencies in your services
