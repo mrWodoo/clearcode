@@ -7,6 +7,7 @@ use AppBundle\Document\Agreement;
 use AppBundle\Document\Person;
 use AppBundle\Enum\Document\AddressTypeEnum;
 use AppBundle\Repository\PersonRepository;
+use AppBundle\Service\PersonService;
 use AppBundle\Service\PersonServiceInterface;
 use Doctrine\ODM\MongoDB\DocumentNotFoundException;
 use PhpSpec\ObjectBehavior;
@@ -20,7 +21,7 @@ class PersonServiceSpec extends ObjectBehavior
         $this
             ->beConstructedWith($personRepository, $validator);
 
-        $this->shouldHaveType(PersonServiceInterface::class);
+        $this->shouldHaveType(PersonService::class);
     }
 
     public function it_throws_exception_on_delete_person_when_document_not_found

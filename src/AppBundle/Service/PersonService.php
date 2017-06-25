@@ -19,6 +19,11 @@ class PersonService implements PersonServiceInterface
     protected $personRepository;
 
     /**
+     * @var ValidatorInterface
+     */
+    protected $validator;
+
+    /**
      * PersonService constructor.
      * @param PersonRepository $personRepository
      * @param ValidatorInterface $validator
@@ -83,7 +88,7 @@ class PersonService implements PersonServiceInterface
             ];
         }
 
-        if ($id) {
+        if ($id && $return) {
             return $return[array_keys($return)[0]];
         }
 
@@ -177,8 +182,7 @@ class PersonService implements PersonServiceInterface
             }
 
             if (array_key_exists('signingDate', $agremeentData)) {
-                $signingDate = new \DateTime($agremeentData['signingDate']);
-                $agreement->setSigningDate($signingDate);
+                $agreement->setSigningDate($agremeentData['signingDate']);
             }
 
             // Validate agreement

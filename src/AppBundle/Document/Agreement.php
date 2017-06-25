@@ -66,10 +66,10 @@ class Agreement
     }
 
     /**
-     * @param \DateTime $signingDate
+     * @param \DateTime|string $signingDate
      * @return $this
      */
-    public function setSigningDate(\DateTime $signingDate)
+    public function setSigningDate($signingDate)
     {
         $this->signingDate = $signingDate;
         return $this;

@@ -20,6 +20,8 @@ Run composer from project's root directory
 
 ```composer install```
 
+Configure ./behat.yml `base_url`
+
 #
 Simple REST API documentation
 ==============
@@ -39,6 +41,7 @@ Fetching specific person by id
 GET /person/{id}
 Returns code 200 on success
 Returns code 404 when person not found
+Response body: JSON with person data
 ```
 
 #
@@ -77,7 +80,7 @@ Returns code 400 when invalid input is sent
 
 Request body: see "More advanced example"
 
-Request response: JSON with id of created person
+Response body: JSON with person data
 ```
 
 List of fields you can manage
